@@ -11,24 +11,32 @@ const refs = {
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.form.addEventListener('input', throttle(onFormInput, 500));
+populatedInputOnReload();
 
-function onFormInput(e) {
-    formData[e.target.name] = e.target.value;
+function onFormInput() {
+    formData.email = refs.input.value;
+    formData.message = refs.textarea.value;
+
     localStorage.setItem(STORAGE_INPUT, JSON.stringify(formData));
 };
 
-populatedInput();
-
 function onFormSubmit(e) {
     e.preventDefault();
-    console.log(`The feedback message from email "${refs.input.value}" is sent!`);
+
+    if (!refs.input.value || !refs.textarea.value) { 
+        return alert('Please fill in all fields!');
+    }
+
+    console.log(formData);
+
     e.currentTarget.reset();
     localStorage.removeItem(STORAGE_INPUT);
 };
 
-function populatedInput() { 
+function populatedInputOnReload() { 
     const savedInput = localStorage.getItem(STORAGE_INPUT);
     const parsedInput = JSON.parse(savedInput);
+
     if (savedInput) { 
         refs.input.value = parsedInput.email;
         refs.textarea.value = parsedInput.message;
